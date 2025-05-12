@@ -1,5 +1,6 @@
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
+
 from mailing.models import Mailing, MailingAttempt, Message, Recipient
 
 
@@ -13,10 +14,14 @@ class Command(BaseCommand):
         MailingAttempt.objects.all().delete()
 
         call_command("loaddata", "recipient_fixture.json", format="json")
-        self.stdout.write(self.style.SUCCESS("Получатели рассылок загружены из фикстур успешно"))
+        self.stdout.write(
+            self.style.SUCCESS("Получатели рассылок загружены из фикстур успешно")
+        )
         call_command("loaddata", "message_fixture.json", format="json")
         self.stdout.write(self.style.SUCCESS("Сообщения загружены из фикстур успешно"))
         call_command("loaddata", "mailing_fixture.json", format="json")
         self.stdout.write(self.style.SUCCESS("Рассылки загружены из фикстур успешно"))
         call_command("loaddata", "mailing_attempt_fixture.json", format="json")
-        self.stdout.write(self.style.SUCCESS("Попытки рассылок загружены из фикстур успешно"))
+        self.stdout.write(
+            self.style.SUCCESS("Попытки рассылок загружены из фикстур успешно")
+        )

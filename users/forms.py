@@ -1,5 +1,6 @@
-
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
+
 from .models import CustomUser
 
 
@@ -24,3 +25,19 @@ class CustomUserCreationForm(UserCreationForm):
         )
 
         self.fields["password2"].help_text = "Введите тот же пароль для подтверждения."
+
+
+class ProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ["email", "first_name", "last_name", "phone_number", "avatar"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)  # Важно вызвать первым!
+
+        # Настройки полей
+        self.fields["avatar"].required = False
+        self.fields["avatar"].widget.attrs.update({"class": "form-control-file"})
+
+        for field in ["email", "first_name", "last_name", "phone_number"]:
+            self.fields[field].widget.attrs.update({"class": "form-control"})

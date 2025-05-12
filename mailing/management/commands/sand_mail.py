@@ -1,14 +1,17 @@
-from mailing.models import Mailing, MailingAttempt
-from config.settings import DEFAULT_FROM_EMAIL
-from django.utils.timezone import now
+from datetime import timedelta
+
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
 from django.db.models import Q
-from django.core.mail import send_mail
-from datetime import timedelta
+from django.utils.timezone import now
+
+from config.settings import DEFAULT_FROM_EMAIL
+from mailing.models import Mailing, MailingAttempt
 
 
 class Command(BaseCommand):
     """Функция для отправки рассылок."""
+
     def handle(self, *args, **kwargs):
         time_threshold_start = now() - timedelta(hours=20)
         time_threshold_end = now()
@@ -16,7 +19,8 @@ class Command(BaseCommand):
         mailings = Mailing.objects.filter(
             Q(status=Mailing.CREATED) | Q(status=Mailing.RUNNING),
             first_send_at__gte=time_threshold_start,
-            first_send_at__lte=time_threshold_end)
+            first_send_at__lte=time_threshold_end,
+        )
 
         for mailing in mailings:
             recipients = mailing.recipients.all()
@@ -35,7 +39,8 @@ class Command(BaseCommand):
                         attempted_at=now(),
                         status=status,
                         mail_server_response=response,
-                        mailing=mailing)
+                        mailing=mailing,
+                    )
 
                 except Exception as e:
                     status = MailingAttempt.FAILURE
